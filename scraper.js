@@ -27,7 +27,7 @@ async function getProductList(req, res){
     await page.waitForNavigation();
 
     let results = [];
-    let hrefs = await page.$x("//*[@data-source-tag]");
+    let hrefs = await page.$x("//*[@data-OfferId]");
 
     for(let href of hrefs){
         const itemId = await page.evaluate(name => name.getAttribute('href'), href);
@@ -43,12 +43,16 @@ async function getProductList(req, res){
 }
 
 async function getProductStoreEntries(itemId){
+    console.log(`getProductStoreEntries called for item id: ${itemId.toString()} ...`);
     const browser = await puppeteer.launch({});
     const page = await browser.newPage();
     await page.setUserAgent(userAgent.toString());
 
-    await page.goto(`https://www.ceneo.pl/${itemId.toString()}`);
-    console.log(`getProductStoreEntries called for item id: ${itemId.toString()} ...`);
+    let source = await page.goto(`https://www.ceneo.pl/${itemId.toString()}`, {'waitUntil' : 'domcontentloaded'});
+
+    const buttons = await page.$x("//span[@class='show-remaining-offers__icon']");
+    buttons[0] && await buttons[0].click();
+    await delay(350);
 
     let hrefs = await page.$x("//*[@data-shopurl and not(@data-promo-name)]");
     let results = [];
@@ -57,13 +61,11 @@ async function getProductStoreEntries(itemId){
         const hrefValue = await page.evaluate(name => {
             let shopurl = name.getAttribute('data-shopurl');
             let price = name.getAttribute('data-price');
-
             return {url: shopurl, price: parseFloat(price)};
-
         }, href);
-        if(!results.some(item => item.url === hrefValue.url)){
+
+        if(!results.some(item => item.url === hrefValue.url))
             results.push(hrefValue);
-        }
     }
 
     console.log(results);
@@ -89,26 +91,15 @@ async function getMatchingStore(req, res){
     }
 
     item1Entries = await getProductStoreEntries(item1Id);
-    await delay(800);
     item2Entries = await getProductStoreEntries(item2Id);
-    await delay(800);
+
     if(item3Id)
         item3Entries = await getProductStoreEntries(item3Id);
-    await delay(2000);
+
     if(item4Id)
         item4Entries = await getProductStoreEntries(item4Id);
 
     let results = [];
-    /*
-    for(let i=0; i<item1Entries.length; i++){
-        for(let j=0; j<item2Entries.length; j++){
-            if(item1Entries[i].url === item2Entries[j].url){
-                results.push({url: item1Entries[i].url, price: parseFloat(item1Entries[j].price) + parseFloat(item2Entries[j].price)})
-                console.log("match!")
-            }
-        }
-    }
-    */
 
     results = item1Entries.filter(object => item2Entries.some(({url}) => object.url === url ));
 
