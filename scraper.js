@@ -1,6 +1,8 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra')
 var userAgent = require('user-agents');
 
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 
 function delay(time) {
     return new Promise(function(resolve) { 
@@ -56,7 +58,7 @@ async function getProductStoreEntries(itemId){
             let shopurl = name.getAttribute('data-shopurl');
             let price = name.getAttribute('data-price');
 
-            return {url: shopurl, price: price};
+            return {url: shopurl, price: parseFloat(price)};
 
         }, href);
         if(!results.some(item => item.url === hrefValue.url)){
@@ -72,11 +74,32 @@ async function getProductStoreEntries(itemId){
 async function getMatchingStore(req, res){
     console.log('getMatchingStores called!');
     const item1Id = req.query.id1; const item2Id = req.query.id2;
-    let item1Entries = await getProductStoreEntries(item1Id);
-    await delay(500);
-    let item2Entries = await getProductStoreEntries(item2Id);
+    const item3Id = req.query.id3; const item4Id = req.query.id4;
+
+    let item1Entries, item2Entries, item3Entries, item4Entries;
+
+    if(!(item1Id && item2Id)){
+        res.json({error: 1, message: "Too few arguments."});
+        return;
+    }
+
+    if(req.query.id5){
+        res.json({error: 2, message: "Too many arguments."});
+        return;
+    }
+
+    item1Entries = await getProductStoreEntries(item1Id);
+    await delay(800);
+    item2Entries = await getProductStoreEntries(item2Id);
+    await delay(800);
+    if(item3Id)
+        item3Entries = await getProductStoreEntries(item3Id);
+    await delay(2000);
+    if(item4Id)
+        item4Entries = await getProductStoreEntries(item4Id);
 
     let results = [];
+    /*
     for(let i=0; i<item1Entries.length; i++){
         for(let j=0; j<item2Entries.length; j++){
             if(item1Entries[i].url === item2Entries[j].url){
@@ -85,6 +108,33 @@ async function getMatchingStore(req, res){
             }
         }
     }
+    */
+
+    results = item1Entries.filter(object => item2Entries.some(({url}) => object.url === url ));
+
+    results = item1Entries.map(item => {
+        for(let items2 of item2Entries)
+            if(items2.url === item.url)
+                return {url: item.url, price: items2.price+item.price}
+    })
+
+
+    if(item3Entries)
+    results = results.map(item => {
+        for(let items2 of item3Entries)
+            if(item && (items2.url === item.url))
+                return {url: item.url, price: (items2.price || 0) + (item.price || 0)}
+    })
+
+    if(item4Entries)
+    results = results.map(item => {
+        for(let items2 of item4Entries)
+            if(item && (items2.url === item.url))
+                return {url: item.url, price: (items2.price || 0) + (item.price || 0)}
+    })
+
+    results = results.filter(item => item);
+    
     res.json(results);
 }
 
