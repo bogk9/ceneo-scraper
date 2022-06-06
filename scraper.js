@@ -59,6 +59,7 @@ async function getProductStoreEntries(itemId){
     const page = await browser.newPage();
 	await page.setUserAgent(userAgent.toString());
 	
+
 	const blockedDomains = [
 	    'https://googleads.g.doubleclick.net',
 	    'https://www.youtube.com', 
@@ -75,15 +76,23 @@ async function getProductStoreEntries(itemId){
 	    }
 	  });
 
+	  console.time('pageLoad');
     let source = await page.goto(`https://www.ceneo.pl/${itemId.toString()}`, {'waitUntil' : 'domcontentloaded'});
+	  console.timeEnd('pageLoad')
 
+		console.time('buttons');
     const buttons = await page.$x("//span[@class='show-remaining-offers__icon']");
     buttons[0] && await buttons[0].click();
     await delay(350);
-
+		console.timeEnd('buttons');
+		
+		
+		console.time('hrefs');
     let hrefs = await page.$x("//*[@data-shopurl and not(@data-promo-name)]");
     let results = [];
+		console.timeEnd('hrefs');
 
+	console.time('for loop');
     for(let href of hrefs){
         const hrefValue = await page.evaluate(name => {
             let shopurl = name.getAttribute('data-shopurl');
@@ -94,6 +103,7 @@ async function getProductStoreEntries(itemId){
         if(!results.some(item => item.url === hrefValue.url))
             results.push(hrefValue);
     }
+	console.timeEnd('for loop')
 
     console.log(results);
     browser.close();
