@@ -1,8 +1,8 @@
-const puppeteer = require('puppeteer-extra')
+const puppeteer = require('puppeteer');
 var userAgent = require('user-agents');
 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+//const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+//puppeteer.use(StealthPlugin())
 
 function delay(time) {
     return new Promise(function(resolve) { 
@@ -27,8 +27,8 @@ async function getProductList(req, res){
     await page.waitForNavigation();
 
     let results = [];
-    let hrefs = await page.$x("//*[@data-OfferId]");
-
+	let hrefs = await page.$x("//*[@data-source-tag]");
+	
     for(let href of hrefs){
         const itemId = await page.evaluate(name => name.getAttribute('href'), href);
         const itemName = await page.evaluate(name => name.children[0].innerHTML, href);
@@ -132,5 +132,3 @@ async function getMatchingStore(req, res){
 
 exports.getProductList = getProductList;
 exports.getMatchingStore = getMatchingStore;
-
-

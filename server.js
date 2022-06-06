@@ -33,7 +33,7 @@ app.use(morgan('tiny')); // logger
 
 require('./routes/routes.js')(app);
 
-app.listen(8080, () => {
+app.listen(process.env.PORT || 8080, () => {
     console.log("Server is running!");
 })
 
