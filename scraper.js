@@ -58,10 +58,21 @@ async function getProductStoreEntries(itemId){
 	                });
     const page = await browser.newPage();
 	await page.setUserAgent(userAgent.toString());
+	
+	const blockedDomains = [
+	    'https://googleads.g.doubleclick.net',
+	    'https://www.youtube.com', 
+		'https://fonts.gstatic.com',
+		'https://image.ceneostatic.pl'];
+		
 	await page.setRequestInterception(true);
 	  page.on('request', (request) => {
-	    if (request.resourceType() === 'image') request.abort();
-	    else request.continue();
+	    const url = request.url();
+	    if (blockedDomains.some((d) => url.startsWith(d))) {
+	      request.abort();
+	    } else {
+	      request.continue();
+	    }
 	  });
 
     let source = await page.goto(`https://www.ceneo.pl/${itemId.toString()}`, {'waitUntil' : 'domcontentloaded'});
