@@ -83,7 +83,7 @@ async function getProductStoreEntries(itemId){
 		console.time('buttons');
     const buttons = await page.$x("//span[@class='show-remaining-offers__icon']");
     buttons[0] && await buttons[0].click();
-    await delay(350);
+    await delay(500);
 		console.timeEnd('buttons');
 		
 		
@@ -100,6 +100,7 @@ async function getProductStoreEntries(itemId){
             return {url: shopurl, price: parseFloat(price)};
         }, href);
 
+		
         if(!results.some(item => item.url === hrefValue.url))
             results.push(hrefValue);
     }
