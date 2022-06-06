@@ -17,7 +17,12 @@ async function getProductList(req, res){
 	                  args: ['--no-sandbox','--disable-setuid-sandbox']
 	                });
     const page = await browser.newPage();
-    await page.setUserAgent(userAgent.toString());
+	await page.setUserAgent(userAgent.toString());
+	await page.setRequestInterception(true);
+	page.on('request', (request) => {
+	    if (request.resourceType() === 'image') request.abort();
+	    else request.continue();
+	  });
 
     console.log(`getProductList called for: ${query} ...`)
     await page.goto('https://www.ceneo.pl');
@@ -52,7 +57,12 @@ async function getProductStoreEntries(itemId){
 	                  args: ['--no-sandbox','--disable-setuid-sandbox']
 	                });
     const page = await browser.newPage();
-    await page.setUserAgent(userAgent.toString());
+	await page.setUserAgent(userAgent.toString());
+	await page.setRequestInterception(true);
+	  page.on('request', (request) => {
+	    if (request.resourceType() === 'image') request.abort();
+	    else request.continue();
+	  });
 
     let source = await page.goto(`https://www.ceneo.pl/${itemId.toString()}`, {'waitUntil' : 'domcontentloaded'});
 
