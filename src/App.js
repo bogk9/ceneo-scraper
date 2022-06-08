@@ -49,7 +49,7 @@ class App extends React.Component {
       propositions: []
     }))
     // axios.get("http://localhost:8080/api/get/productInfo?name=%22" + this.state.searchInputVal + "%22")
-    axios.get("https://scraper-ceneo.herokuapp.com/api/get/productInfo?name=%22" + this.state.searchInputVal.toLowerCase() + "%22")
+    axios.get("api/get/productInfo?name=%22" + this.state.searchInputVal.toLowerCase() + "%22")
       .then((response) => {
         let propositionsLimited = response.data
         propositionsLimited = propositionsLimited.filter(el => el.id)
@@ -108,7 +108,7 @@ class App extends React.Component {
 
   handleSearchShops() {
 
-    let url = "https://scraper-ceneo.herokuapp.com/api/get/matchingStore?"
+    let url = "/api/get/matchingStore?"
     let counter = 1
     this.state.itemList.forEach(el => {
       url = url + "id" + String(counter) + "=" + String(el.id) + "&"
