@@ -1,0 +1,27 @@
+{
+    "scraper": {
+        "page_url": "https://www.ceneo.pl",
+        "request_delay": 500,
+        "button_delay": 100,
+        "blocked_domains": 
+            [
+                "https://googleads.g.doubleclick.net",
+                "https://www.youtube.com",
+                "https://fonts.gstatic.com",
+                "https://image.ceneostatic.pl",
+                "https://securepubads.g.doubleclick.net",
+                "https://ad.doubleclick.net",
+                "https://metrics.ceneo.pl",
+                "https://www.ceneo.pl/TrackPartnerVisit"
+            ],
+        "item_href_xpath": "//*[@data-source-tag and not(@data-promo-name)]",
+        "offer_href_url_attr": "data-shopurl",
+        "offer_href_price_attr": "data-price",
+        "offer_href_xpath": "//*[@data-shopurl and not(@data-promo-name)]",
+        "remaining_offers_button_xpath": "//span[@class='show-remaining-offers__icon']"
+    },
+    "express": {
+        "window_time_limit": 900000,
+        "window_max_conn": 30
+    }
+}

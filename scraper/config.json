@@ -1,0 +1,12 @@
+{
+  "call_delay": "500",
+  "blocked_domains": [
+    "https://googleads.g.doubleclick.net",
+    "https://www.youtube.com",
+    "https://fonts.gstatic.com",
+    "https://image.ceneostatic.pl",
+    "https://securepubads.g.doubleclick.net",
+    "https://ad.doubleclick.net",
+    "https://metrics.ceneo.pl"
+  ]
+}
