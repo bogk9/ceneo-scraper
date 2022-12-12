@@ -1,6 +1,6 @@
 # ceneo-multizakupy
 
-Simple SPA app that allows the user to check whether there is an store that has all the products from the shopping list.
+Simple SPA that allows the user to check for a store that has all the products from the shopping list.
 
 ## Screenshots
 
